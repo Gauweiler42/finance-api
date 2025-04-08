@@ -19,7 +19,7 @@ export class YahooFinanceController {
     return await this.yahooFinanceService.searchTicker(ticker);
   }
 
-  @Get('/historic/:ticker')
+  @Get('/chart/:ticker')
   @ApiOperation({ summary: 'Get historic data for a ticker' })
   @ApiParam({
     name: 'ticker',
@@ -41,7 +41,7 @@ export class YahooFinanceController {
     description: 'Interval for historic data (e.g., 1d, 1wk, 1mo)',
     example: '1d',
   })
-  async getHistoricData(
+  async getChartData(
     @Param('ticker') ticker: string,
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
@@ -61,7 +61,7 @@ export class YahooFinanceController {
       | '1mo'
       | '3mo',
   ) {
-    return await this.yahooFinanceService.getHistoricData(ticker, {
+    return await this.yahooFinanceService.getChartData(ticker, {
       period1: new Date(startDate).getTime() / 1000,
       period2: new Date(endDate).getTime() / 1000,
       interval,

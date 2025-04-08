@@ -15,7 +15,7 @@ export class YahooFinanceService {
     return yahooFinance.search(ticker);
   }
 
-  public async getHistoricData(
+  public async getChartData(
     ticker: string,
     queryOptions: ChartOptionsWithReturnObject,
   ) {
