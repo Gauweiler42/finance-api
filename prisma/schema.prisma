@@ -19,7 +19,8 @@ model Stock {
   sectorDisp String
   industry   String
 
-  Prices     Price[]
+  Prices    Price[]
+  FetchPlan FetchPlan[]
 }
 
 model Price {
@@ -29,8 +30,17 @@ model Price {
   high      Float
   low       Float
   close     Float
-  volume    Int
+  volume    BigInt
   adjclose  Float
   stockId   String
   stock     Stock    @relation(fields: [stockId], references: [ticker])
+}
+
+model FetchPlan {
+  id           Int      @id @default(autoincrement())
+  Stock        Stock    @relation(fields: [stockId], references: [ticker])
+  stockId      String
+  scheduleTime DateTime
+  createdAt    DateTime @default(now())
+  status       Boolean  @default(false)
 }

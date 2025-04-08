@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Price" ALTER COLUMN "volume" SET DATA TYPE BIGINT;

@@ -6,13 +6,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   private readonly logger = new Logger(PrismaService.name);
 
   constructor() {
-    super();
     if (!process.env.DATABASE_URL) {
       const errorMessage =
         'DATABASE_URL is not set in the environment variables.';
-      this.logger.error(errorMessage);
       throw new Error(errorMessage);
     }
+
+    super();
   }
 
   async onModuleInit() {
