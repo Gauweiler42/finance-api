@@ -153,4 +153,48 @@ export class SchedulerService {
       `Fetching prices for ${stockId} completed in ${duration}ms`,
     );
   }
+
+  @Cron('0 0 * * 6')
+  async planPriceFetching() {
+    const start = Date.now();
+    const stocks = await this.prismaService.stock.findMany();
+
+    if (stocks.length === 0) {
+      this.logger.debug('No stocks found');
+      return;
+    }
+
+    // Berechne das nächste Montag (kommende Woche)
+    const now = new Date();
+    const daysUntilNextMonday = (8 - now.getDay()) % 7 || 7;
+    const nextMonday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + daysUntilNextMonday,
+      0,
+      0,
+      0,
+    );
+    const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+    const intervalMs = oneWeekMs / stocks.length;
+
+    // Erstelle für jeden Stock einen fetch-Plan, der über die kommende Woche verteilt ist
+    const fetchPlans = stocks.map((stock, index) => {
+      const scheduledTime = new Date(nextMonday.getTime() + index * intervalMs);
+      return {
+        stockId: stock.ticker,
+        scheduleTime: scheduledTime,
+        // createdAt wird durch default(now()) in Prisma gesetzt,
+        status: false,
+      };
+    });
+
+    await this.prismaService.fetchPlan.createMany({
+      data: fetchPlans,
+    });
+    const duration = Date.now() - start;
+    this.logger.log(
+      `Price fetching plan created for ${stocks.length} stocks in ${duration}ms`,
+    );
+  }
 }
